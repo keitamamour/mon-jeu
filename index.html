@@ -37,6 +37,14 @@ body {
     font-size: 20px;
 }
 
+button {
+    padding: 10px;
+    margin: 10px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+}
+
 /* 🎆 confetti */
 .confetti {
     position: fixed;
@@ -68,12 +76,12 @@ body {
 
 <body>
 
-<!-- 🎧 musique fond -->
+<!-- 🎧 musique -->
 <audio id="bgMusic" loop>
   <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_6c5c2e9c3b.mp3" type="audio/mpeg">
 </audio>
 
-<!-- 🔥 son victoire -->
+<!-- 🔥 victoire -->
 <audio id="winSound">
   <source src="https://cdn.pixabay.com/audio/2022/10/16/audio_12b0c7443e.mp3" type="audio/mpeg">
 </audio>
@@ -86,7 +94,12 @@ body {
 
 <input id="input" type="number">
 <br>
+
 <button onclick="verifier()">Deviner</button>
+<br>
+
+<!-- 🎧 bouton musique -->
+<button onclick="startMusic()">🎧 Play musique</button>
 
 <p id="resultat"></p>
 </div>
@@ -102,12 +115,12 @@ if (meilleur_score) {
     "🏆 Meilleur score : " + meilleur_score;
 }
 
-/* 🎧 lancer musique au premier clic */
-document.body.addEventListener("click", function () {
+/* 🎧 lancer musique */
+function startMusic() {
     let music = document.getElementById("bgMusic");
     music.volume = 0.3;
     music.play();
-}, { once: true });
+}
 
 function verifier() {
     let devine = document.getElementById("input").value;
@@ -117,9 +130,7 @@ function verifier() {
         document.getElementById("resultat").innerText =
         "🎉 BINGO ! Trouvé en " + essais + " essais !";
 
-        document.getElementById("winSound").volume = 1;
         document.getElementById("winSound").play();
-
         explosion();
 
         if (!meilleur_score || essais < meilleur_score) {
@@ -160,7 +171,7 @@ function explosion() {
     }
 }
 
-/* 😭 effet raté */
+/* 😭 raté */
 function secousse() {
     let game = document.getElementById("game");
     game.classList.add("shake");
