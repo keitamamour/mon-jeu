@@ -6,14 +6,11 @@
 <style>
 body {
     margin: 0;
-    overflow: hidden;
     font-family: Arial;
     color: white;
     text-align: center;
-}
+    overflow: hidden;
 
-/* 🌌 fond animé VISIBLE */
-body {
     background: linear-gradient(-45deg, #ff0000, #0000ff, #00ffcc, #ffcc00);
     background-size: 400% 400%;
     animation: gradient 10s ease infinite;
@@ -37,6 +34,7 @@ body {
     position: fixed;
     top: 10px;
     left: 10px;
+    font-size: 20px;
 }
 
 /* 🎆 confetti */
@@ -70,9 +68,15 @@ body {
 
 <body>
 
-<!-- 🔊 sons -->
-<audio id="winSound" src="https://www.myinstants.com/media/sounds/tada-fanfare.mp3"></audio>
-<audio id="loseSound" src="https://www.myinstants.com/media/sounds/error.mp3"></audio>
+<!-- 🎧 musique fond -->
+<audio id="bgMusic" loop>
+  <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_6c5c2e9c3b.mp3" type="audio/mpeg">
+</audio>
+
+<!-- 🔥 son victoire -->
+<audio id="winSound">
+  <source src="https://cdn.pixabay.com/audio/2022/10/16/audio_12b0c7443e.mp3" type="audio/mpeg">
+</audio>
 
 <div id="score">🏆 Meilleur score : -</div>
 
@@ -81,6 +85,7 @@ body {
 <p>Entre 1 et 40</p>
 
 <input id="input" type="number">
+<br>
 <button onclick="verifier()">Deviner</button>
 
 <p id="resultat"></p>
@@ -97,6 +102,13 @@ if (meilleur_score) {
     "🏆 Meilleur score : " + meilleur_score;
 }
 
+/* 🎧 lancer musique au premier clic */
+document.body.addEventListener("click", function () {
+    let music = document.getElementById("bgMusic");
+    music.volume = 0.3;
+    music.play();
+}, { once: true });
+
 function verifier() {
     let devine = document.getElementById("input").value;
     essais++;
@@ -105,7 +117,9 @@ function verifier() {
         document.getElementById("resultat").innerText =
         "🎉 BINGO ! Trouvé en " + essais + " essais !";
 
-        document.getElementById("winSound").play(); // 🔊 son victoire
+        document.getElementById("winSound").volume = 1;
+        document.getElementById("winSound").play();
+
         explosion();
 
         if (!meilleur_score || essais < meilleur_score) {
@@ -124,12 +138,12 @@ function verifier() {
 
     else if (devine < nombre_secret) {
         document.getElementById("resultat").innerText = "📉 Trop petit";
-        erreur();
+        secousse();
     }
 
     else {
         document.getElementById("resultat").innerText = "📈 Trop grand";
-        erreur();
+        secousse();
     }
 }
 
@@ -146,10 +160,8 @@ function explosion() {
     }
 }
 
-/* ❌ erreur */
-function erreur() {
-    document.getElementById("loseSound").play(); // 🔊 son erreur
-
+/* 😭 effet raté */
+function secousse() {
     let game = document.getElementById("game");
     game.classList.add("shake");
 
