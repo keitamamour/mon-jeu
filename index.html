@@ -1,37 +1,44 @@
-age = int(input("quel age as-tu?")) 
-if age >= 4:   
-   print("peut jouer")
-else:
-   print("trop petit pour jouer")
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mon Jeu</title>
+</head>
+<body>
 
+<h1>🎮 Devine le nombre (1 à 40)</h1>
 
+<input id="input" type="number">
+<button onclick="verifier()">Deviner</button>
 
-import random
- 
-meilleur_score = None    #   aucun score au début
-while True:   # 🔁 boucle pour rejouer 
+<p id="resultat"></p>
 
-    nombre_secret = random.randint(1, 40)
-    essais = 0 
-    while True: # 🎮 boucle du jeu 
-         devine = int(input("trouve le bon nombre entre 1 et 40 :")) 
-         essais = essais +1   # on ajoute 1 à chaque essai  
-         if devine == nombre_secret:  
-              print("tu as trouvé  🎉")  
-              print("nombre d'essais :" , essais) # score 
-         # ✅ meilleur score
-              if meilleur_score is None or essais < meilleur_score: 
-                   meilleur_score = essais 
-                   print("NOUVEAU RECORD 🏆  :" , meilleur_score) 
+<script>
+let nombre_secret = Math.floor(Math.random() * 40) + 1;
+let essais = 0;
+let meilleur_score = null;
 
+function verifier() {
+    let devine = document.getElementById("input").value;
+    essais++;
 
-              break 
-         elif devine < nombre_secret: 
-              print("trop petit") 
-         else: 
-              print("trop grand") 
-    #  🔁 rejouer 
-    replay = input("tu veux rejouer ? (oui/non)  :  ") 
-    if replay != "oui": 
-         print("meilleur score final :" , meilleur_score)  
-         break
+    if (devine == nombre_secret) {
+        let message = "🎉 Trouvé en " + essais + " essais !";
+
+        if (meilleur_score === null || essais < meilleur_score) {
+            meilleur_score = essais;
+            message += " 🏆 Nouveau record !";
+        }
+
+        document.getElementById("resultat").innerText = message;
+    }
+    else if (devine < nombre_secret) {
+        document.getElementById("resultat").innerText = "📉 Trop petit";
+    }
+    else {
+        document.getElementById("resultat").innerText = "📈 Trop grand";
+    }
+}
+</script>
+
+</body>
+</html>
