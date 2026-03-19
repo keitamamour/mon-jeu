@@ -1,96 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Mon Jeu</title>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            font-family: Arial;
-            color: white;
-            text-align: center;
-        }
+<title>Mon Jeu</title>
 
-        /* 🎨 fond animé */
-        body::before {
-            content: "";
-            position: fixed;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, #ff00cc, #3333ff, #00ffcc, #ffcc00);
-            animation: move 10s linear infinite;
-            z-index: -1;
-        }
+<style>
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial;
+    color: white;
+    text-align: center;
+}
 
-        @keyframes move {
-            0% { transform: translate(0,0); }
-            50% { transform: translate(-25%, -25%); }
-            100% { transform: translate(0,0); }
-        }
+/* 🌌 fond animé style anime */
+body::before {
+    content: "";
+    position: fixed;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, #ff6600, #000033, #00ccff);
+    animation: anime 8s infinite alternate;
+    z-index: -1;
+}
 
-        .box {
-            background: rgba(0,0,0,0.5);
-            padding: 30px;
-            border-radius: 20px;
-            margin-top: 100px;
-            display: inline-block;
-        }
+@keyframes anime {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.2); }
+}
 
-        input, button {
-            padding: 10px;
-            font-size: 18px;
-            border-radius: 10px;
-            border: none;
-            margin: 10px;
-        }
+.box {
+    background: rgba(0,0,0,0.6);
+    padding: 30px;
+    border-radius: 20px;
+    margin-top: 100px;
+    display: inline-block;
+}
 
-        button {
-            background: orange;
-            cursor: pointer;
-        }
+#score {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+}
 
-        #resultat {
-            font-size: 24px;
-            margin-top: 20px;
-        }
+/* 🎆 confetti */
+.confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    top: 0;
+    animation: fall 2s linear forwards;
+}
 
-        #score {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            font-size: 20px;
-        }
+@keyframes fall {
+    to {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
 
-        /* 🎆 confetti */
-        .confetti {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            top: 0;
-            animation: fall 2s linear forwards;
-        }
+/* 😭 animation raté */
+.shake {
+    animation: shake 0.3s;
+}
 
-        @keyframes fall {
-            to {
-                transform: translateY(100vh) rotate(720deg);
-                opacity: 0;
-            }
-        }
-
-        /* 😭 animation défaite */
-        .shake {
-            animation: shake 0.3s;
-        }
-
-        @keyframes shake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            50% { transform: translateX(10px); }
-            75% { transform: translateX(-10px); }
-            100% { transform: translateX(0); }
-        }
-    </style>
+@keyframes shake {
+    0% { transform: translateX(0); }
+    50% { transform: translateX(-10px); }
+    100% { transform: translateX(10px); }
+}
+</style>
 </head>
+
 <body>
 
 <div id="score">🏆 Meilleur score : -</div>
@@ -100,7 +80,6 @@
 <p>Entre 1 et 40</p>
 
 <input id="input" type="number">
-<br>
 <button onclick="verifier()">Deviner</button>
 
 <p id="resultat"></p>
@@ -110,7 +89,6 @@
 let nombre_secret = Math.floor(Math.random() * 40) + 1;
 let essais = 0;
 
-/* 🏆 meilleur score sauvegardé */
 let meilleur_score = localStorage.getItem("score");
 
 if (meilleur_score) {
@@ -128,16 +106,13 @@ function verifier() {
 
         explosion();
 
-        /* 🏆 update score */
         if (!meilleur_score || essais < meilleur_score) {
             meilleur_score = essais;
             localStorage.setItem("score", essais);
-
             document.getElementById("score").innerText =
             "🏆 Meilleur score : " + essais;
         }
 
-        /* 🔄 nouveau jeu */
         setTimeout(() => {
             nombre_secret = Math.floor(Math.random() * 40) + 1;
             essais = 0;
@@ -145,16 +120,16 @@ function verifier() {
         }, 2000);
     }
 
+    else if (devine < nombre_secret) {
+        document.getElementById("resultat").innerText = "📉 Trop petit";
+
+        secousse();
+    }
+
     else {
-        document.getElementById("resultat").innerText = "❌ Raté !";
+        document.getElementById("resultat").innerText = "📈 Trop grand";
 
-        /* 😭 animation perte */
-        let game = document.getElementById("game");
-        game.classList.add("shake");
-
-        setTimeout(() => {
-            game.classList.remove("shake");
-        }, 300);
+        secousse();
     }
 }
 
@@ -169,6 +144,16 @@ function explosion() {
 
         setTimeout(() => div.remove(), 2000);
     }
+}
+
+/* 😭 effet raté */
+function secousse() {
+    let game = document.getElementById("game");
+    game.classList.add("shake");
+
+    setTimeout(() => {
+        game.classList.remove("shake");
+    }, 300);
 }
 </script>
 
