@@ -1,0 +1,37 @@
+age = int(input("quel age as-tu?")) 
+if age >= 4:   
+   print("peut jouer")
+else:
+   print("trop petit pour jouer")
+
+
+
+import random
+ 
+meilleur_score = None    #   aucun score au début
+while True:   # 🔁 boucle pour rejouer 
+
+    nombre_secret = random.randint(1, 40)
+    essais = 0 
+    while True: # 🎮 boucle du jeu 
+         devine = int(input("trouve le bon nombre entre 1 et 40 :")) 
+         essais = essais +1   # on ajoute 1 à chaque essai  
+         if devine == nombre_secret:  
+              print("tu as trouvé  🎉")  
+              print("nombre d'essais :" , essais) # score 
+         # ✅ meilleur score
+              if meilleur_score is None or essais < meilleur_score: 
+                   meilleur_score = essais 
+                   print("NOUVEAU RECORD 🏆  :" , meilleur_score) 
+
+
+              break 
+         elif devine < nombre_secret: 
+              print("trop petit") 
+         else: 
+              print("trop grand") 
+    #  🔁 rejouer 
+    replay = input("tu veux rejouer ? (oui/non)  :  ") 
+    if replay != "oui": 
+         print("meilleur score final :" , meilleur_score)  
+         break
