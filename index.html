@@ -2,15 +2,67 @@
 <html>
 <head>
     <title>Mon Jeu</title>
+    <style>
+        body {
+            background: linear-gradient(to right, #1e3c72, #2a5298);
+            color: white;
+            text-align: center;
+            font-family: Arial;
+            margin-top: 100px;
+        }
+
+        h1 {
+            font-size: 40px;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 18px;
+            border-radius: 10px;
+            border: none;
+            margin: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 10px;
+            border: none;
+            background: orange;
+            color: black;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: yellow;
+        }
+
+        #resultat {
+            margin-top: 20px;
+            font-size: 24px;
+        }
+
+        .box {
+            background: rgba(0,0,0,0.3);
+            padding: 30px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+    </style>
 </head>
 <body>
 
-<h1>🎮 Devine le nombre (1 à 40)</h1>
+<div class="box">
+<h1>🎮 Devine le nombre</h1>
+
+<p>Entre 1 et 40</p>
 
 <input id="input" type="number">
+<br>
 <button onclick="verifier()">Deviner</button>
 
 <p id="resultat"></p>
+</div>
 
 <script>
 let nombre_secret = Math.floor(Math.random() * 40) + 1;
