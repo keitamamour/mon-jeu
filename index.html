@@ -12,20 +12,17 @@ body {
     text-align: center;
 }
 
-/* 🌌 fond animé style anime */
-body::before {
-    content: "";
-    position: fixed;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, #ff6600, #000033, #00ccff);
-    animation: anime 8s infinite alternate;
-    z-index: -1;
+/* 🌌 fond animé VISIBLE */
+body {
+    background: linear-gradient(-45deg, #ff0000, #0000ff, #00ffcc, #ffcc00);
+    background-size: 400% 400%;
+    animation: gradient 10s ease infinite;
 }
 
-@keyframes anime {
-    0% { transform: scale(1); }
-    100% { transform: scale(1.2); }
+@keyframes gradient {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
 }
 
 .box {
@@ -58,7 +55,7 @@ body::before {
     }
 }
 
-/* 😭 animation raté */
+/* 😭 secousse */
 .shake {
     animation: shake 0.3s;
 }
@@ -72,6 +69,10 @@ body::before {
 </head>
 
 <body>
+
+<!-- 🔊 sons -->
+<audio id="winSound" src="https://www.myinstants.com/media/sounds/tada-fanfare.mp3"></audio>
+<audio id="loseSound" src="https://www.myinstants.com/media/sounds/error.mp3"></audio>
 
 <div id="score">🏆 Meilleur score : -</div>
 
@@ -104,6 +105,7 @@ function verifier() {
         document.getElementById("resultat").innerText =
         "🎉 BINGO ! Trouvé en " + essais + " essais !";
 
+        document.getElementById("winSound").play(); // 🔊 son victoire
         explosion();
 
         if (!meilleur_score || essais < meilleur_score) {
@@ -122,14 +124,12 @@ function verifier() {
 
     else if (devine < nombre_secret) {
         document.getElementById("resultat").innerText = "📉 Trop petit";
-
-        secousse();
+        erreur();
     }
 
     else {
         document.getElementById("resultat").innerText = "📈 Trop grand";
-
-        secousse();
+        erreur();
     }
 }
 
@@ -146,8 +146,10 @@ function explosion() {
     }
 }
 
-/* 😭 effet raté */
-function secousse() {
+/* ❌ erreur */
+function erreur() {
+    document.getElementById("loseSound").play(); // 🔊 son erreur
+
     let game = document.getElementById("game");
     game.classList.add("shake");
 
