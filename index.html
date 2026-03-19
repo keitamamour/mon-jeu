@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Mon Jeu</title>
+<title>Jeu Addictif</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -80,9 +80,9 @@ input, button {
 
 <body>
 
-<!-- 🎧 musique -->
+<!-- 🎧 musique hypnotisante -->
 <audio id="bgMusic" loop>
-  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+  <source src="https://cdn.pixabay.com/audio/2022/02/23/audio_0f0c2e6c59.mp3" type="audio/mpeg">
 </audio>
 
 <!-- 🔥 victoire -->
@@ -121,7 +121,7 @@ if (meilleur_score) {
 /* 🎧 musique */
 function startMusic() {
     let music = document.getElementById("bgMusic");
-    music.volume = 0.2;
+    music.volume = 0.15; // doux = addictif
     music.play();
 }
 
