@@ -54,12 +54,18 @@
             margin-top: 20px;
         }
 
-        /* 🎆 particules */
+        #score {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            font-size: 20px;
+        }
+
+        /* 🎆 confetti */
         .confetti {
             position: fixed;
             width: 10px;
             height: 10px;
-            background: yellow;
             top: 0;
             animation: fall 2s linear forwards;
         }
@@ -70,11 +76,26 @@
                 opacity: 0;
             }
         }
+
+        /* 😭 animation défaite */
+        .shake {
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+            75% { transform: translateX(-10px); }
+            100% { transform: translateX(0); }
+        }
     </style>
 </head>
 <body>
 
-<div class="box">
+<div id="score">🏆 Meilleur score : -</div>
+
+<div class="box" id="game">
 <h1>🎮 Devine le nombre</h1>
 <p>Entre 1 et 40</p>
 
@@ -89,27 +110,57 @@
 let nombre_secret = Math.floor(Math.random() * 40) + 1;
 let essais = 0;
 
+/* 🏆 meilleur score sauvegardé */
+let meilleur_score = localStorage.getItem("score");
+
+if (meilleur_score) {
+    document.getElementById("score").innerText =
+    "🏆 Meilleur score : " + meilleur_score;
+}
+
 function verifier() {
     let devine = document.getElementById("input").value;
     essais++;
 
     if (devine == nombre_secret) {
         document.getElementById("resultat").innerText =
-        "🎉 GAGNÉ en " + essais + " essais !";
+        "🎉 BINGO ! Trouvé en " + essais + " essais !";
 
-        explosion(); // 💥 effet stylé
+        explosion();
+
+        /* 🏆 update score */
+        if (!meilleur_score || essais < meilleur_score) {
+            meilleur_score = essais;
+            localStorage.setItem("score", essais);
+
+            document.getElementById("score").innerText =
+            "🏆 Meilleur score : " + essais;
+        }
+
+        /* 🔄 nouveau jeu */
+        setTimeout(() => {
+            nombre_secret = Math.floor(Math.random() * 40) + 1;
+            essais = 0;
+            document.getElementById("resultat").innerText = "";
+        }, 2000);
     }
-    else if (devine < nombre_secret) {
-        document.getElementById("resultat").innerText = "📉 Trop petit";
-    }
+
     else {
-        document.getElementById("resultat").innerText = "📈 Trop grand";
+        document.getElementById("resultat").innerText = "❌ Raté !";
+
+        /* 😭 animation perte */
+        let game = document.getElementById("game");
+        game.classList.add("shake");
+
+        setTimeout(() => {
+            game.classList.remove("shake");
+        }, 300);
     }
 }
 
-// 🎆 effet pétard
+/* 🎆 explosion */
 function explosion() {
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 60; i++) {
         let div = document.createElement("div");
         div.classList.add("confetti");
         div.style.left = Math.random() * 100 + "vw";
