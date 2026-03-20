@@ -2,7 +2,6 @@
 <html>
 <head>
 <title>Jeu Addictif</title>
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -11,7 +10,6 @@ body {
     font-family: Arial;
     color: white;
     text-align: center;
-    overflow: hidden;
 
     background: linear-gradient(-45deg, #ff0000, #0000ff, #00ffcc, #ffcc00);
     background-size: 400% 400%;
@@ -30,84 +28,42 @@ body {
     border-radius: 20px;
     margin-top: 80px;
     display: inline-block;
-    width: 90%;
-    max-width: 400px;
+}
+
+button, input {
+    padding: 10px;
+    margin: 10px;
+    border-radius: 10px;
+    border: none;
 }
 
 #score {
     position: fixed;
     top: 10px;
     left: 10px;
-    font-size: 16px;
-}
-
-input, button {
-    padding: 10px;
-    margin: 8px;
-    border-radius: 10px;
-    border: none;
-    font-size: 16px;
-}
-
-/* 🎆 confetti */
-.confetti {
-    position: fixed;
-    width: 10px;
-    height: 10px;
-    top: 0;
-    animation: fall 2s linear forwards;
-}
-
-@keyframes fall {
-    to {
-        transform: translateY(100vh) rotate(720deg);
-        opacity: 0;
-    }
-}
-
-/* 😭 secousse */
-.shake {
-    animation: shake 0.3s;
-}
-
-@keyframes shake {
-    0% { transform: translateX(0); }
-    50% { transform: translateX(-10px); }
-    100% { transform: translateX(10px); }
 }
 </style>
 </head>
 
 <body>
 
-<!-- 🎧 musique entraînante -->
-<audio id="bgMusic" loop>
-  <source src="https://cdn.pixabay.com/audio/2021/11/25/audio_1c0b6e9c6f.mp3" type="audio/mpeg">
-</audio>
+<!-- 🎧 audio -->
+<audio id="bgMusic" loop></audio>
+<audio id="winSound"></audio>
+<audio id="clickSound"></audio>
 
-<!-- 🔥 victoire -->
-<audio id="winSound">
-  <source src="https://www.soundjay.com/buttons/sounds/button-09.mp3" type="audio/mpeg">
-</audio>
+<div id="score">🏆 Score : -</div>
 
-<!-- 🔊 clic -->
-<audio id="clickSound">
-  <source src="https://www.soundjay.com/buttons/sounds/button-16.mp3" type="audio/mpeg">
-</audio>
-
-<div id="score">🏆 Meilleur score : -</div>
-
-<div class="box" id="game">
+<div class="box">
 <h1>🎮 Devine le nombre</h1>
-<p>Entre 1 et 40</p>
 
-<input id="input" type="number" placeholder="Entre un nombre">
+<input id="input" type="number">
 <br>
 
 <button onclick="verifier()">Deviner</button>
 <br>
 
-<button onclick="startMusic()">🎧 Play musique</button>
+<button onclick="startMusic()">🎧 Activer musique</button>
 
 <p id="resultat"></p>
 </div>
@@ -116,80 +72,44 @@ input, button {
 let nombre_secret = Math.floor(Math.random() * 40) + 1;
 let essais = 0;
 
-let meilleur_score = localStorage.getItem("score");
+// 🔥 charger sons fiables
+let bg = document.getElementById("bgMusic");
+let win = document.getElementById("winSound");
+let click = document.getElementById("clickSound");
 
-if (meilleur_score) {
-    document.getElementById("score").innerText =
-    "🏆 Meilleur score : " + meilleur_score;
-}
+// ⚠️ liens simples qui marchent mieux
+bg.src = "https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3";
+win.src = "https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3";
+click.src = "https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3";
 
-/* 🎧 musique (compatible mobile) */
+// 🎧 start musique
 function startMusic() {
-    let music = document.getElementById("bgMusic");
-    music.volume = 0.2;
-    music.play();
+    bg.volume = 0.2;
+    bg.play().catch(()=>alert("Clique encore pour activer le son"));
 }
 
-/* 🎮 jeu */
+// 🎮 jeu
 function verifier() {
-    document.getElementById("clickSound").play();
+    click.play();
 
     let devine = document.getElementById("input").value;
     essais++;
 
     if (devine == nombre_secret) {
         document.getElementById("resultat").innerText =
-        "🎉 BINGO ! Trouvé en " + essais + " essais !";
+        "🎉 Gagné en " + essais + " essais";
 
-        document.getElementById("winSound").play();
-        explosion();
+        win.play();
 
-        if (!meilleur_score || essais < meilleur_score) {
-            meilleur_score = essais;
-            localStorage.setItem("score", essais);
-            document.getElementById("score").innerText =
-            "🏆 Meilleur score : " + essais;
-        }
-
-        setTimeout(() => {
-            nombre_secret = Math.floor(Math.random() * 40) + 1;
-            essais = 0;
-            document.getElementById("resultat").innerText = "";
-        }, 2000);
+        nombre_secret = Math.floor(Math.random() * 40) + 1;
+        essais = 0;
     }
-
     else if (devine < nombre_secret) {
         document.getElementById("resultat").innerText = "📉 Trop petit";
-        secousse();
     }
-
     else {
         document.getElementById("resultat").innerText = "📈 Trop grand";
-        secousse();
     }
-}
-
-/* 🎆 explosion */
-function explosion() {
-    for (let i = 0; i < 50; i++) {
-        let div = document.createElement("div");
-        div.classList.add("confetti");
-        div.style.left = Math.random() * 100 + "vw";
-        div.style.background = "hsl(" + Math.random()*360 + ",100%,50%)";
-        document.body.appendChild(div);
-
-        setTimeout(() => div.remove(), 2000);
-    }
-}
-
-/* 😭 raté */
-function secousse() {
-    let game = document.getElementById("game");
-    game.classList.add("shake");
-
-    setTimeout(() => {
-        game.classList.remove("shake");
-    }, 300);
 }
 </script>
 
