@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini Block Blast</title>
+
+<style>
+body {
+    margin:0;
+    background:black;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+canvas {
+    background:#111;
+    border:3px solid white;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="game" width="300" height="600"></canvas>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+const grid = 30;
+let board = [];
+
+for (let y = 0; y < 20; y++) {
+    board[y] = [];
+    for (let x = 0; x < 10; x++) {
+        board[y][x] = 0;
+    }
+}
+
+let piece = {
+    x: 4,
+    y: 0,
+    shape: [[1,1,1],[0,1,0]]
+};
+
+function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    // draw board
+    for(let y=0;y<20;y++){
+        for(let x=0;x<10;x++){
+            if(board[y][x]){
+                ctx.fillStyle="cyan";
+                ctx.fillRect(x*grid,y*grid,grid,grid);
+            }
+        }
+    }
+
+    // draw piece
+    ctx.fillStyle="orange";
+    piece.shape.forEach((row, y)=>{
+        row.forEach((value, x)=>{
+            if(value){
+                ctx.fillRect((piece.x+x)*grid,(piece.y+y)*grid,grid,grid);
+            }
+        });
+    });
+}
+
+function update() {
+    piece.y++;
+
+    if(collision()){
+        piece.y--;
+        merge();
+        clearLines();
+        newPiece();
+    }
+
+    draw();
+}
+
+function collision(){
+    for(let y=0;y<piece.shape.length;y++){
+        for(let x=0;x<piece.shape[y].length;x++){
+            if(piece.shape[y][x]){
+                let newX = piece.x + x;
+                let newY = piece.y + y;
+
+                if(newY>=20 || newX<0 || newX>=10 || board[newY][newX]){
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+function merge(){
+    piece.shape.forEach((row,y)=>{
+        row.forEach((value,x)=>{
+            if(value){
+                board[piece.y+y][piece.x+x]=1;
+            }
+        });
+    });
+}
+
+function clearLines(){
+    for(let y=19;y>=0;y--){
+        if(board[y].every(v=>v)){
+            board.splice(y,1);
+            board.unshift(new Array(10).fill(0));
+        }
+    }
+}
+
+function newPiece(){
+    piece = {
+        x:4,
+        y:0,
+        shape: Math.random()>0.5 ? [[1,1,1],[0,1,0]] : [[1,1],[1,1]]
+    };
+}
+
+document.addEventListener("keydown", e=>{
+    if(e.key==="ArrowLeft") piece.x--;
+    if(e.key==="ArrowRight") piece.x++;
+    if(e.key==="ArrowDown") piece.y++;
+});
+
+setInterval(update, 500);
+</script>
+
+</body>
+</html>
