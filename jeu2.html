@@ -95,186 +95,51 @@ h1 { margin:10px; }
 <div class="block-zone" id="blocks"></div>
 
 <script>
-const gridSize = 10;
-let grid = [];
-let score = 0;
-let best = localStorage.getItem("best") || 0;
+let ghost = null;
+let dragBlock = null;
 
-document.getElementById("best").innerText="🏆 Best: "+best;
+document.querySelectorAll(".block").forEach(block => {
+    block.addEventListener("touchstart", e => {
+        dragBlock = block;
 
-let selectedBlock = null;
-let selectedDiv = null;
+        let rect = block.getBoundingClientRect();
 
-const colors = ["#00f5d4","#ff006e","#8338ec","#ffbe0b","#fb5607"];
-
-function createGrid(){
-    const gridDiv = document.getElementById("grid");
-    gridDiv.innerHTML="";
-    grid=[];
-
-    for(let i=0;i<gridSize*gridSize;i++){
-        let cell=document.createElement("div");
-        cell.className="cell";
-        cell.onclick=()=>placeBlock(i);
-        gridDiv.appendChild(cell);
-        grid.push(null);
-    }
-}
-
-const shapes = [
-    [[1,1],[1,1]],
-    [[1,1,1]],
-    [[1],[1],[1]],
-    [[1,1,0],[0,1,1]]
-];
-
-function generateBlocks(){
-    const zone=document.getElementById("blocks");
-    zone.innerHTML="";
-
-    for(let i=0;i<3;i++){
-        let shape=shapes[Math.floor(Math.random()*shapes.length)];
-        let color=colors[Math.floor(Math.random()*colors.length)];
-
-        let div=document.createElement("div");
-        div.className="block";
-        div.style.gridTemplateColumns=`repeat(${shape[0].length},20px)`;
-
-        shape.forEach(row=>{
-            row.forEach(cell=>{
-                let d=document.createElement("div");
-                if(cell){
-                    d.style.background=color;
-                } else {
-                    d.style.visibility="hidden";
-                }
-                div.appendChild(d);
-            });
-        });
-
-        div.onclick=()=>{
-            document.querySelectorAll(".block").forEach(b=>b.classList.remove("selected"));
-            div.classList.add("selected");
-            selectedBlock={shape,color};
-            selectedDiv=div;
-        };
-
-        zone.appendChild(div);
-    }
-}
-
-function placeBlock(index){
-    if(!selectedBlock) return;
-
-    let x=index%gridSize;
-    let y=Math.floor(index/gridSize);
-
-    let canPlace=true;
-
-    selectedBlock.shape.forEach((row,dy)=>{
-        row.forEach((cell,dx)=>{
-            if(cell){
-                let nx=x+dx;
-                let ny=y+dy;
-                if(nx>=gridSize || ny>=gridSize || grid[ny*gridSize+nx]){
-                    canPlace=false;
-                }
-            }
-        });
+        ghost = block.cloneNode(true);
+        ghost.style.position = "fixed";
+        ghost.style.left = rect.left + "px";
+        ghost.style.top = rect.top + "px";
+        ghost.style.opacity = "0.7";
+        ghost.style.pointerEvents = "none";
+        document.body.appendChild(ghost);
     });
+});
 
-    if(!canPlace) return;
+document.addEventListener("touchmove", e => {
+    if(!ghost) return;
 
-    document.getElementById("placeSound").play();
+    let touch = e.touches[0];
+    ghost.style.left = (touch.clientX - 30) + "px";
+    ghost.style.top = (touch.clientY - 30) + "px";
+});
 
-    selectedBlock.shape.forEach((row,dy)=>{
-        row.forEach((cell,dx)=>{
-            if(cell){
-                let nx=x+dx;
-                let ny=y+dy;
-                grid[ny*gridSize+nx]=selectedBlock.color;
-            }
-        });
-    });
+document.addEventListener("touchend", e => {
+    if(!ghost) return;
 
-    selectedDiv.remove();
-    selectedBlock=null;
-    updateGrid();
-    checkLines();
-}
+    let touch = e.changedTouches[0;
 
-function updateGrid(){
-    document.querySelectorAll(".cell").forEach((cell,i)=>{
-        cell.style.background=grid[i] || "#222";
-    });
-}
+    let element = document.elementFromPoint(touch.clientX, touch.clientY);
 
-function checkLines(){
-    let cleared=false;
+    if(element && element.classList.contains("cell")){
+        let index = Array.from(document.querySelectorAll(".cell")).indexOf(element);
 
-    for(let y=0;y<gridSize;y++){
-        if(grid.slice(y*gridSize,y*gridSize+gridSize).every(v=>v)){
-            for(let x=0;x<gridSize;x++){
-                let index=y*gridSize+x;
-                document.querySelectorAll(".cell")[index].classList.add("boom");
-                grid[index]=null;
-            }
-            score+=10;
-            cleared=true;
-        }
+        // utiliser ton système existant
+        placeBlock(index);
     }
 
-    for(let x=0;x<gridSize;x++){
-        let full=true;
-        for(let y=0;y<gridSize;y++){
-            if(!grid[y*gridSize+x]) full=false;
-        }
-        if(full){
-            for(let y=0;y<gridSize;y++){
-                let index=y*gridSize+x;
-                document.querySelectorAll(".cell")[index].classList.add("boom");
-                grid[index]=null;
-            }
-            score+=10;
-            cleared=true;
-        }
-    }
-
-    if(cleared){
-        document.getElementById("clearSound").play();
-    }
-
-    if(score>best){
-        best=score;
-        localStorage.setItem("best",best);
-        document.getElementById("best").innerText="🏆 Best: "+best;
-    }
-
-    document.getElementById("score").innerText="Score: "+score;
-    updateGrid();
-
-    if(document.getElementById("blocks").children.length===0){
-        generateBlocks();
-    }
-
-    checkGameOver();
-}
-
-function checkGameOver(){
-    if(document.getElementById("blocks").children.length===0){
-        alert("💀 GAME OVER !");
-        location.reload();
-    }
-}
-
-function startMusic(){
-    let music=document.getElementById("bgMusic");
-    music.volume=0.15;
-    music.play();
-}
-
-createGrid();
-generateBlocks();
+    ghost.remove();
+    ghost = null;
+    dragBlock = null;
+});
 </script>
 
 </body>
