@@ -1,0 +1,37 @@
+import random
+
+score_joueur = 0
+score_ordi = 0
+
+while True:
+    choix_ordi = random.choice(["pierre", "feuille", "ciseaux"])
+    choix_joueur = input("Choisis pierre, feuille ou ciseaux : ").lower()
+
+    # Vérification
+    if choix_joueur not in ["pierre", "feuille", "ciseaux"]:
+        print("Choix invalide !")
+        continue
+
+    print("Ordinateur :", choix_ordi)
+
+    # Résultat
+    if choix_joueur == choix_ordi:
+        print("Égalité !")
+    elif (choix_joueur == "pierre" and choix_ordi == "ciseaux") or \
+         (choix_joueur == "feuille" and choix_ordi == "pierre") or \
+         (choix_joueur == "ciseaux" and choix_ordi == "feuille"):
+        print("Tu gagnes !")
+        score_joueur += 1
+    else:
+        print("Tu perds !")
+        score_ordi += 1
+
+    # Score
+    print("Score -> Toi:", score_joueur, "| Ordi:", score_ordi)
+
+    # Rejouer
+    replay = input("Tu veux rejouer ? (oui/non) : ").lower()
+    if replay != "oui":
+        break
+
+print("Merci d'avoir joué ! 👋")
