@@ -1,21 +1,10 @@
 import random
-import tkinter as tk
+import time
 
-# Score
 score_joueur = 0
 score_ordi = 0
-niveau = "facile"
 
-emojis = {
-    "pierre": "✊",
-    "feuille": "✋",
-    "ciseaux": "✌️"
-}
-
-# IA
-def choix_ia(choix_joueur):
-    global niveau
-
+def choix_ia(niveau, choix_joueur):
     if niveau == "facile":
         return random.choice(["pierre", "feuille", "ciseaux"])
 
@@ -31,84 +20,60 @@ def choix_ia(choix_joueur):
     else:
         return "pierre"
 
-# Jouer
-def jouer(choix_joueur):
-    global score_joueur, score_ordi
+emojis = {
+    "pierre": "✊",
+    "feuille": "✋",
+    "ciseaux": "✌️"
+}
 
-    label_resultat.config(text="Pierre...")
-    fenetre.update()
-    fenetre.after(300)
+print("🎮 Pierre - Feuille - Ciseaux PRO 🎮")
 
-    label_resultat.config(text="Feuille...")
-    fenetre.update()
-    fenetre.after(300)
-
-    label_resultat.config(text="Ciseaux...")
-    fenetre.update()
-    fenetre.after(300)
-
-    choix_ordi = choix_ia(choix_joueur)
-
-    texte = f"{emojis[choix_joueur]} VS {emojis[choix_ordi]}\n"
-
-    if choix_joueur == choix_ordi:
-        texte += "Égalité !"
-    elif (choix_joueur == "pierre" and choix_ordi == "ciseaux") or \
-         (choix_joueur == "feuille" and choix_ordi == "pierre") or \
-         (choix_joueur == "ciseaux" and choix_ordi == "feuille"):
-        texte += "Tu gagnes !"
-        score_joueur += 1
-        fenetre.bell()
-    else:
-        texte += "Tu perds !"
-        score_ordi += 1
-
-    label_resultat.config(text=texte)
-    label_score.config(text=f"Score : {score_joueur} - {score_ordi}")
-
-    # Fin du jeu
-    if score_joueur == 7:
-        label_resultat.config(text="🏆 TU GAGNES LA PARTIE !")
-        reset()
-    elif score_ordi == 7:
-        label_resultat.config(text="💀 TU AS PERDU !")
-        reset()
-
-# Reset
-def reset():
-    global score_joueur, score_ordi
+while True:
     score_joueur = 0
     score_ordi = 0
-    label_score.config(text="Score : 0 - 0")
 
-# Niveau
-def set_niveau(n):
-    global niveau
-    niveau = n
-    label_niveau.config(text="Niveau : " + niveau)
+    niveau = input("Choisis un niveau (facile / normal / difficile) : ").lower()
 
-# Fenêtre
-fenetre = tk.Tk()
-fenetre.title("Pierre Feuille Ciseaux 🎮")
-fenetre.configure(bg="black")
+    while score_joueur < 7 and score_ordi < 7:
+        choix_joueur = input("Choisis pierre, feuille ou ciseaux : ").lower()
 
-label_niveau = tk.Label(fenetre, text="Niveau : facile", fg="white", bg="black")
-label_niveau.pack()
+        if choix_joueur not in ["pierre", "feuille", "ciseaux"]:
+            print("❌ Choix invalide !")
+            continue
 
-label_resultat = tk.Label(fenetre, text="Choisis !", font=("Arial", 20), fg="cyan", bg="black")
-label_resultat.pack(pady=10)
+        print("\nPierre...")
+        time.sleep(0.5)
+        print("Feuille...")
+        time.sleep(0.5)
+        print("Ciseaux...")
+        time.sleep(0.5)
+        print("GO !\n")
 
-label_score = tk.Label(fenetre, text="Score : 0 - 0", font=("Arial", 16), fg="yellow", bg="black")
-label_score.pack(pady=5)
+        choix_ordi = choix_ia(niveau, choix_joueur)
 
-# Boutons jeu
-tk.Button(fenetre, text="✊ Pierre", width=15, command=lambda: jouer("pierre")).pack(pady=5)
-tk.Button(fenetre, text="✋ Feuille", width=15, command=lambda: jouer("feuille")).pack(pady=5)
-tk.Button(fenetre, text="✌️ Ciseaux", width=15, command=lambda: jouer("ciseaux")).pack(pady=5)
+        print("Toi :", emojis[choix_joueur])
+        print("Ordi :", emojis[choix_ordi])
 
-# Boutons niveau
-tk.Button(fenetre, text="Facile", command=lambda: set_niveau("facile")).pack(pady=2)
-tk.Button(fenetre, text="Normal", command=lambda: set_niveau("normal")).pack(pady=2)
-tk.Button(fenetre, text="Difficile", command=lambda: set_niveau("difficile")).pack(pady=2)
+        if choix_joueur == choix_ordi:
+            print("⚖️ Égalité !")
+        elif (choix_joueur == "pierre" and choix_ordi == "ciseaux") or \
+             (choix_joueur == "feuille" and choix_ordi == "pierre") or \
+             (choix_joueur == "ciseaux" and choix_ordi == "feuille"):
+            print("✅ Tu gagnes !")
+            score_joueur += 1
+        else:
+            print("❌ Tu perds !")
+            score_ordi += 1
 
-fenetre.mainloop()
+        print(f"🏆 Score : Toi {score_joueur} - {score_ordi} Ordi\n")
+
+    if score_joueur == 7:
+        print("🎉 TU GAGNES LA PARTIE !")
+    else:
+        print("💀 TU AS PERDU !")
+
+    replay = input("Rejouer ? (oui/non) : ").lower()
+    if replay != "oui":
+        break
+
+print("👋 Merci d'avoir joué !")
