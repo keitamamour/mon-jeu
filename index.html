@@ -1,114 +1,185 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Jeu Addictif</title>
+<title>Jeu PRO</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body {
-    margin: 0;
-    font-family: Arial;
-    color: white;
-    text-align: center;
-
-    background: linear-gradient(-45deg, #ff0000, #0000ff, #00ffcc, #ffcc00);
-    background-size: 400% 400%;
-    animation: gradient 10s ease infinite;
+    margin:0;
+    font-family:Arial;
+    color:white;
+    text-align:center;
+    background:black;
 }
 
-@keyframes gradient {
-    0% {background-position: 0% 50%;}
-    50% {background-position: 100% 50%;}
-    100% {background-position: 0% 50%;}
+/* écran menu */
+#menu {
+    margin-top:150px;
+}
+
+button {
+    padding:12px;
+    margin:10px;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+}
+
+/* jeu */
+#game {
+    display:none;
 }
 
 .box {
-    background: rgba(0,0,0,0.6);
-    padding: 20px;
-    border-radius: 20px;
-    margin-top: 80px;
-    display: inline-block;
+    background:rgba(0,0,0,0.7);
+    padding:20px;
+    border-radius:20px;
+    margin-top:50px;
+    display:inline-block;
 }
 
-button, input {
-    padding: 10px;
-    margin: 10px;
-    border-radius: 10px;
-    border: none;
+#top {
+    position:fixed;
+    top:10px;
+    left:10px;
 }
 
-#score {
-    position: fixed;
-    top: 10px;
-    left: 10px;
+/* confetti */
+.confetti {
+    position:fixed;
+    width:10px;
+    height:10px;
+    top:0;
+    animation:fall 3s linear forwards;
+}
+
+@keyframes fall {
+    to {
+        transform:translateY(100vh) rotate(1080deg);
+        opacity:0;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<!-- 🎧 audio -->
-<audio id="bgMusic" loop></audio>
-<audio id="winSound"></audio>
-<audio id="clickSound"></audio>
+<!-- 🎧 sons -->
+<audio id="bgMusic" loop>
+<source src="https://cdn.pixabay.com/audio/2022/03/15/audio_6c5c2e9c3b.mp3">
+</audio>
 
-<div id="score">🏆 Score : -</div>
+<audio id="winSound">
+<source src="https://cdn.pixabay.com/audio/2022/10/16/audio_12b0c7443e.mp3">
+</audio>
+
+<!-- MENU -->
+<div id="menu">
+<h1>🔥 MON JEU 🔥</h1>
+<button onclick="startGame()">▶️ Jouer</button>
+</div>
+
+<!-- JEU -->
+<div id="game">
+<div id="top">
+❤️ <span id="vies">3</span> |
+⏱ <span id="time">0</span>s |
+🏆 <span id="score">-</span>
+</div>
 
 <div class="box">
-<h1>🎮 Devine le nombre</h1>
-
+<h2>Devine le nombre</h2>
 <input id="input" type="number">
 <br>
-
 <button onclick="verifier()">Deviner</button>
-<br>
-
-<button onclick="startMusic()">🎧 Activer musique</button>
-
 <p id="resultat"></p>
+</div>
 </div>
 
 <script>
-let nombre_secret = Math.floor(Math.random() * 40) + 1;
-let essais = 0;
+let nombre_secret;
+let essais;
+let vies;
+let temps = 0;
+let timer;
+let meilleur = localStorage.getItem("score");
 
-// 🔥 charger sons fiables
-let bg = document.getElementById("bgMusic");
-let win = document.getElementById("winSound");
-let click = document.getElementById("clickSound");
+/* start */
+function startGame(){
+    document.getElementById("menu").style.display="none";
+    document.getElementById("game").style.display="block";
 
-// ⚠️ liens simples qui marchent mieux
-bg.src = "https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3";
-win.src = "https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3";
-click.src = "https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3";
+    document.getElementById("bgMusic").play();
 
-// 🎧 start musique
-function startMusic() {
-    bg.volume = 0.2;
-    bg.play().catch(()=>alert("Clique encore pour activer le son"));
+    reset();
+    startTimer();
 }
 
-// 🎮 jeu
-function verifier() {
-    click.play();
+/* reset */
+function reset(){
+    nombre_secret = Math.floor(Math.random()*40)+1;
+    essais = 0;
+    vies = 3;
 
+    document.getElementById("vies").innerText = vies;
+    document.getElementById("resultat").innerText="";
+}
+
+/* timer */
+function startTimer(){
+    timer = setInterval(()=>{
+        temps++;
+        document.getElementById("time").innerText = temps;
+    },1000);
+}
+
+/* jeu */
+function verifier(){
     let devine = document.getElementById("input").value;
     essais++;
 
-    if (devine == nombre_secret) {
-        document.getElementById("resultat").innerText =
-        "🎉 Gagné en " + essais + " essais";
+    if(devine == nombre_secret){
+        document.getElementById("resultat").innerText="🎉 GAGNÉ !";
 
-        win.play();
+        document.getElementById("winSound").play();
+        explosion();
 
-        nombre_secret = Math.floor(Math.random() * 40) + 1;
-        essais = 0;
+        if(!meilleur || essais < meilleur){
+            meilleur = essais;
+            localStorage.setItem("score", essais);
+            document.getElementById("score").innerText = essais;
+        }
+
+        reset();
     }
-    else if (devine < nombre_secret) {
-        document.getElementById("resultat").innerText = "📉 Trop petit";
+    else{
+        vies--;
+        document.getElementById("vies").innerText = vies;
+
+        if(devine < nombre_secret){
+            document.getElementById("resultat").innerText="📉 Trop petit";
+        } else {
+            document.getElementById("resultat").innerText="📈 Trop grand";
+        }
+
+        if(vies == 0){
+            document.getElementById("resultat").innerText="💀 PERDU";
+            reset();
+        }
     }
-    else {
-        document.getElementById("resultat").innerText = "📈 Trop grand";
+}
+
+/* confetti */
+function explosion(){
+    for(let i=0;i<100;i++){
+        let d=document.createElement("div");
+        d.classList.add("confetti");
+        d.style.left=Math.random()*100+"vw";
+        d.style.background="hsl("+Math.random()*360+",100%,50%)";
+        document.body.appendChild(d);
+
+        setTimeout(()=>d.remove(),3000);
     }
 }
 </script>
