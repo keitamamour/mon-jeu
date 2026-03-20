@@ -78,17 +78,17 @@ input, button {
 
 <body>
 
-<!-- 🎧 MUSIQUE (LOCAL = 100% OK) -->
+<!-- 🎧 MUSIQUE (ton fichier) -->
 <audio id="bgMusic" loop>
   <source src="music.mp3" type="audio/mpeg">
 </audio>
 
-<!-- 🎉 VICTOIRE -->
+<!-- 🎉 victoire -->
 <audio id="winSound">
-  <source src="win.mp3" type="audio/mpeg">
+  <source src="music.mp3" type="audio/mpeg">
 </audio>
 
-<!-- 🔊 CLICK -->
+<!-- 🔊 clic -->
 <audio id="clickSound">
   <source src="https://www.soundjay.com/buttons/sounds/button-16.mp3">
 </audio>
@@ -121,14 +121,12 @@ if (meilleur_score) {
     "🏆 Meilleur score : " + meilleur_score;
 }
 
-/* musique */
 function startMusic() {
     let music = document.getElementById("bgMusic");
-    music.volume = 0.2;
+    music.volume = 0.15;
     music.play();
 }
 
-/* jeu */
 function verifier() {
     document.getElementById("clickSound").play();
 
@@ -169,7 +167,6 @@ function verifier() {
     document.getElementById("input").value = "";
 }
 
-/* confetti */
 function explosion() {
     for (let i = 0; i < 150; i++) {
         let div = document.createElement("div");
@@ -182,7 +179,6 @@ function explosion() {
     }
 }
 
-/* shake */
 function secousse() {
     let game = document.getElementById("game");
     game.classList.add("shake");
