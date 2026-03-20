@@ -29,8 +29,6 @@ body {
     border-radius: 20px;
     margin-top: 80px;
     display: inline-block;
-    width: 90%;
-    max-width: 400px;
 }
 
 #score {
@@ -44,7 +42,6 @@ input, button {
     margin: 8px;
     border-radius: 10px;
     border: none;
-    font-size: 16px;
 }
 
 /* confetti */
@@ -78,19 +75,14 @@ input, button {
 
 <body>
 
-<!-- 🎧 MUSIQUE (ton fichier) -->
+<!-- 🎧 MUSIQUE (ATTENTION AU NOM) -->
 <audio id="bgMusic" loop>
-  <source src="music.mp3" type="audio/mpeg">
+  <source src="music.mp3.mp3" type="audio/mpeg">
 </audio>
 
 <!-- 🎉 victoire -->
 <audio id="winSound">
-  <source src="music.mp3" type="audio/mpeg">
-</audio>
-
-<!-- 🔊 clic -->
-<audio id="clickSound">
-  <source src="https://www.soundjay.com/buttons/sounds/button-16.mp3">
+  <source src="music.mp3.mp3" type="audio/mpeg">
 </audio>
 
 <div id="score">🏆 Meilleur score : -</div>
@@ -121,15 +113,19 @@ if (meilleur_score) {
     "🏆 Meilleur score : " + meilleur_score;
 }
 
+/* 🎧 MUSIQUE */
 function startMusic() {
     let music = document.getElementById("bgMusic");
-    music.volume = 0.15;
-    music.play();
+    music.volume = 0.2;
+    music.play().then(()=>{
+        console.log("SON OK");
+    }).catch(()=>{
+        alert("Clique encore pour activer le son");
+    });
 }
 
+/* 🎮 JEU */
 function verifier() {
-    document.getElementById("clickSound").play();
-
     let devine = document.getElementById("input").value;
     essais++;
 
@@ -167,6 +163,7 @@ function verifier() {
     document.getElementById("input").value = "";
 }
 
+/* confetti */
 function explosion() {
     for (let i = 0; i < 150; i++) {
         let div = document.createElement("div");
@@ -179,6 +176,7 @@ function explosion() {
     }
 }
 
+/* shake */
 function secousse() {
     let game = document.getElementById("game");
     game.classList.add("shake");
