@@ -1,37 +1,75 @@
-import random
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pierre Feuille Ciseaux</title>
 
-score_joueur = 0
-score_ordi = 0
+<style>
+body {
+    text-align:center;
+    font-family:Arial;
+    background:#111;
+    color:white;
+}
 
-while True:
-    choix_ordi = random.choice(["pierre", "feuille", "ciseaux"])
-    choix_joueur = input("Choisis pierre, feuille ou ciseaux : ").lower()
+button {
+    padding:15px;
+    margin:10px;
+    font-size:18px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+}
 
-    # Vérification
-    if choix_joueur not in ["pierre", "feuille", "ciseaux"]:
-        print("Choix invalide !")
-        continue
+#result {
+    margin-top:20px;
+    font-size:22px;
+}
+</style>
+</head>
 
-    print("Ordinateur :", choix_ordi)
+<body>
 
-    # Résultat
-    if choix_joueur == choix_ordi:
-        print("Égalité !")
-    elif (choix_joueur == "pierre" and choix_ordi == "ciseaux") or \
-         (choix_joueur == "feuille" and choix_ordi == "pierre") or \
-         (choix_joueur == "ciseaux" and choix_ordi == "feuille"):
-        print("Tu gagnes !")
-        score_joueur += 1
-    else:
-        print("Tu perds !")
-        score_ordi += 1
+<h1>✊ Pierre Feuille Ciseaux</h1>
 
-    # Score
-    print("Score -> Toi:", score_joueur, "| Ordi:", score_ordi)
+<button onclick="jouer('pierre')">🪨 Pierre</button>
+<button onclick="jouer('feuille')">📄 Feuille</button>
+<button onclick="jouer('ciseaux')">✂️ Ciseaux</button>
 
-    # Rejouer
-    replay = input("Tu veux rejouer ? (oui/non) : ").lower()
-    if replay != "oui":
-        break
+<div id="result"></div>
+<div id="score"></div>
 
-print("Merci d'avoir joué ! 👋")
+<script>
+let scoreJoueur = 0;
+let scoreOrdi = 0;
+
+function jouer(choixJoueur){
+    let choix = ["pierre","feuille","ciseaux"];
+    let choixOrdi = choix[Math.floor(Math.random()*3)];
+
+    let result = "Ordi: " + choixOrdi + "<br>";
+
+    if(choixJoueur === choixOrdi){
+        result += "Égalité 🤝";
+    }
+    else if(
+        (choixJoueur === "pierre" && choixOrdi === "ciseaux") ||
+        (choixJoueur === "feuille" && choixOrdi === "pierre") ||
+        (choixJoueur === "ciseaux" && choixOrdi === "feuille")
+    ){
+        result += "Tu gagnes 🎉";
+        scoreJoueur++;
+    }
+    else{
+        result += "Tu perds 😢";
+        scoreOrdi++;
+    }
+
+    document.getElementById("result").innerHTML = result;
+    document.getElementById("score").innerHTML =
+        "Score → Toi: " + scoreJoueur + " | Ordi: " + scoreOrdi;
+}
+</script>
+
+</body>
+</html>
