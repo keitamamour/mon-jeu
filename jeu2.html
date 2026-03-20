@@ -15,7 +15,9 @@ body {
 
 h1 { margin:10px; }
 
-#score { font-size:20px; }
+#score, #best {
+    font-size:18px;
+}
 
 .grid {
     display:grid;
@@ -30,6 +32,7 @@ h1 { margin:10px; }
     height:30px;
     background:#222;
     border-radius:5px;
+    transition:0.2s;
 }
 
 .block-zone {
@@ -43,12 +46,16 @@ h1 { margin:10px; }
     display:grid;
     gap:2px;
     cursor:pointer;
+    border:2px solid transparent;
+}
+
+.block.selected {
+    border:2px solid yellow;
 }
 
 .block div {
     width:20px;
     height:20px;
-    background:cyan;
     border-radius:3px;
 }
 </style>
@@ -58,16 +65,29 @@ h1 { margin:10px; }
 
 <h1>🧩 Block Blast</h1>
 <div id="score">Score: 0</div>
+<div id="best">🏆 Best: 0</div>
+
+<button onclick="startMusic()">🎧 Musique</button>
+
+<audio id="bgMusic" loop>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
 
 <div id="grid" class="grid"></div>
-
 <div class="block-zone" id="blocks"></div>
 
 <script>
 const gridSize = 10;
 let grid = [];
 let score = 0;
+let best = localStorage.getItem("best") || 0;
+
+document.getElementById("best").innerText="🏆 Best: "+best;
+
 let selectedBlock = null;
+let selectedDiv = null;
+
+const colors = ["#00f5d4","#ff006e","#8338ec","#ffbe0b","#fb5607"];
 
 function createGrid(){
     const gridDiv = document.getElementById("grid");
@@ -75,12 +95,11 @@ function createGrid(){
     grid=[];
 
     for(let i=0;i<gridSize*gridSize;i++){
-        let cell = document.createElement("div");
+        let cell=document.createElement("div");
         cell.className="cell";
-        cell.dataset.index=i;
         cell.onclick=()=>placeBlock(i);
         gridDiv.appendChild(cell);
-        grid.push(0);
+        grid.push(null);
     }
 }
 
@@ -97,6 +116,7 @@ function generateBlocks(){
 
     for(let i=0;i<3;i++){
         let shape=shapes[Math.floor(Math.random()*shapes.length)];
+        let color=colors[Math.floor(Math.random()*colors.length)];
 
         let div=document.createElement("div");
         div.className="block";
@@ -105,12 +125,21 @@ function generateBlocks(){
         shape.forEach(row=>{
             row.forEach(cell=>{
                 let d=document.createElement("div");
-                if(!cell) d.style.visibility="hidden";
+                if(cell){
+                    d.style.background=color;
+                } else {
+                    d.style.visibility="hidden";
+                }
                 div.appendChild(d);
             });
         });
 
-        div.onclick=()=>selectedBlock=shape;
+        div.onclick=()=>{
+            document.querySelectorAll(".block").forEach(b=>b.classList.remove("selected"));
+            div.classList.add("selected");
+            selectedBlock={shape,color};
+            selectedDiv=div;
+        };
 
         zone.appendChild(div);
     }
@@ -124,7 +153,7 @@ function placeBlock(index){
 
     let canPlace=true;
 
-    selectedBlock.forEach((row,dy)=>{
+    selectedBlock.shape.forEach((row,dy)=>{
         row.forEach((cell,dx)=>{
             if(cell){
                 let nx=x+dx;
@@ -138,16 +167,17 @@ function placeBlock(index){
 
     if(!canPlace) return;
 
-    selectedBlock.forEach((row,dy)=>{
+    selectedBlock.shape.forEach((row,dy)=>{
         row.forEach((cell,dx)=>{
             if(cell){
                 let nx=x+dx;
                 let ny=y+dy;
-                grid[ny*gridSize+nx]=1;
+                grid[ny*gridSize+nx]=selectedBlock.color;
             }
         });
     });
 
+    selectedDiv.remove();
     selectedBlock=null;
     updateGrid();
     checkLines();
@@ -155,40 +185,60 @@ function placeBlock(index){
 
 function updateGrid(){
     document.querySelectorAll(".cell").forEach((cell,i)=>{
-        cell.style.background=grid[i]?"cyan":"#222";
+        cell.style.background=grid[i] || "#222";
     });
 }
 
 function checkLines(){
+    let cleared=false;
+
     for(let y=0;y<gridSize;y++){
-        let full=true;
-        for(let x=0;x<gridSize;x++){
-            if(!grid[y*gridSize+x]) full=false;
-        }
-        if(full){
+        if(grid.slice(y*gridSize,y*gridSize+gridSize).every(v=>v)){
             for(let x=0;x<gridSize;x++){
-                grid[y*gridSize+x]=0;
+                grid[y*gridSize+x]=null;
             }
             score+=10;
+            cleared=true;
         }
     }
 
     for(let x=0;x<gridSize;x++){
-        let full=true;
+        let colFull=true;
         for(let y=0;y<gridSize;y++){
-            if(!grid[y*gridSize+x]) full=false;
+            if(!grid[y*gridSize+x]) colFull=false;
         }
-        if(full){
+        if(colFull){
             for(let y=0;y<gridSize;y++){
-                grid[y*gridSize+x]=0;
+                grid[y*gridSize+x]=null;
             }
             score+=10;
+            cleared=true;
         }
+    }
+
+    if(cleared){
+        document.body.style.background="green";
+        setTimeout(()=>document.body.style.background="",200);
+    }
+
+    if(score>best){
+        best=score;
+        localStorage.setItem("best",best);
+        document.getElementById("best").innerText="🏆 Best: "+best;
     }
 
     document.getElementById("score").innerText="Score: "+score;
     updateGrid();
-    generateBlocks();
+
+    if(document.getElementById("blocks").children.length===0){
+        generateBlocks();
+    }
+}
+
+function startMusic(){
+    let music=document.getElementById("bgMusic");
+    music.volume=0.15;
+    music.play();
 }
 
 createGrid();
