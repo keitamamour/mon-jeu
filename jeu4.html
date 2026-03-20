@@ -16,13 +16,12 @@ emojis = {
 def choix_ia(choix_joueur):
     if niveau == "facile":
         return random.choice(["pierre", "feuille", "ciseaux"])
-    
+
     elif niveau == "normal":
-        # 50% hasard, 50% contrer joueur
         if random.random() < 0.5:
             return random.choice(["pierre", "feuille", "ciseaux"])
-    
-    # difficile → contre toujours
+
+    # difficile
     if choix_joueur == "pierre":
         return "feuille"
     elif choix_joueur == "feuille":
@@ -57,16 +56,13 @@ def jouer(choix_joueur):
          (choix_joueur == "ciseaux" and choix_ordi == "feuille"):
         texte += "Tu gagnes !"
         score_joueur += 1
-        fenetre.bell()  # son
+        fenetre.bell()
     else:
         texte += "Tu perds !"
         score_ordi += 1
 
     label_resultat.config(text=texte)
-
-    label_score.config(
-        text=f"Score : {score_joueur} - {score_ordi}"
-    )
+    label_score.config(text=f"Score : {score_joueur} - {score_ordi}")
 
     # Fin du jeu
     if score_joueur == 7:
