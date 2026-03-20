@@ -14,6 +14,8 @@ emojis = {
 
 # IA
 def choix_ia(choix_joueur):
+    global niveau
+
     if niveau == "facile":
         return random.choice(["pierre", "feuille", "ciseaux"])
 
@@ -77,6 +79,7 @@ def reset():
     global score_joueur, score_ordi
     score_joueur = 0
     score_ordi = 0
+    label_score.config(text="Score : 0 - 0")
 
 # Niveau
 def set_niveau(n):
@@ -86,7 +89,7 @@ def set_niveau(n):
 
 # Fenêtre
 fenetre = tk.Tk()
-fenetre.title("Jeu PRO 🎮")
+fenetre.title("Pierre Feuille Ciseaux 🎮")
 fenetre.configure(bg="black")
 
 label_niveau = tk.Label(fenetre, text="Niveau : facile", fg="white", bg="black")
@@ -95,17 +98,17 @@ label_niveau.pack()
 label_resultat = tk.Label(fenetre, text="Choisis !", font=("Arial", 20), fg="cyan", bg="black")
 label_resultat.pack(pady=10)
 
-label_score = tk.Label(fenetre, text="0 - 0", font=("Arial", 16), fg="yellow", bg="black")
+label_score = tk.Label(fenetre, text="Score : 0 - 0", font=("Arial", 16), fg="yellow", bg="black")
 label_score.pack(pady=5)
 
 # Boutons jeu
-tk.Button(fenetre, text="✊", width=10, command=lambda: jouer("pierre")).pack(pady=5)
-tk.Button(fenetre, text="✋", width=10, command=lambda: jouer("feuille")).pack(pady=5)
-tk.Button(fenetre, text="✌️", width=10, command=lambda: jouer("ciseaux")).pack(pady=5)
+tk.Button(fenetre, text="✊ Pierre", width=15, command=lambda: jouer("pierre")).pack(pady=5)
+tk.Button(fenetre, text="✋ Feuille", width=15, command=lambda: jouer("feuille")).pack(pady=5)
+tk.Button(fenetre, text="✌️ Ciseaux", width=15, command=lambda: jouer("ciseaux")).pack(pady=5)
 
 # Boutons niveau
-tk.Button(fenetre, text="Facile", command=lambda: set_niveau("facile")).pack()
-tk.Button(fenetre, text="Normal", command=lambda: set_niveau("normal")).pack()
-tk.Button(fenetre, text="Difficile", command=lambda: set_niveau("difficile")).pack()
+tk.Button(fenetre, text="Facile", command=lambda: set_niveau("facile")).pack(pady=2)
+tk.Button(fenetre, text="Normal", command=lambda: set_niveau("normal")).pack(pady=2)
+tk.Button(fenetre, text="Difficile", command=lambda: set_niveau("difficile")).pack(pady=2)
 
 fenetre.mainloop()
