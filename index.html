@@ -1,186 +1,194 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Jeu PRO</title>
+<title>Jeu Ultime</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body {
-    margin:0;
-    font-family:Arial;
-    color:white;
-    text-align:center;
-    background:black;
+    margin: 0;
+    font-family: Arial;
+    color: white;
+    text-align: center;
+    overflow: hidden;
+
+    background: linear-gradient(-45deg, #ff00cc, #3333ff, #00ffcc, #ff9900);
+    background-size: 400% 400%;
+    animation: gradient 8s ease infinite;
 }
 
-/* écran menu */
-#menu {
-    margin-top:150px;
-}
-
-button {
-    padding:12px;
-    margin:10px;
-    border:none;
-    border-radius:10px;
-    font-size:16px;
-}
-
-/* jeu */
-#game {
-    display:none;
+@keyframes gradient {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
 }
 
 .box {
-    background:rgba(0,0,0,0.7);
-    padding:20px;
-    border-radius:20px;
-    margin-top:50px;
-    display:inline-block;
+    background: rgba(0,0,0,0.7);
+    padding: 20px;
+    border-radius: 20px;
+    margin-top: 80px;
+    display: inline-block;
+    width: 90%;
+    max-width: 400px;
 }
 
-#top {
-    position:fixed;
-    top:10px;
-    left:10px;
+#score {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    font-size: 16px;
 }
 
-/* confetti */
+input, button {
+    padding: 12px;
+    margin: 8px;
+    border-radius: 10px;
+    border: none;
+    font-size: 16px;
+}
+
+/* 🎆 CONFETTI */
 .confetti {
-    position:fixed;
-    width:10px;
-    height:10px;
-    top:0;
-    animation:fall 3s linear forwards;
+    position: fixed;
+    width: 12px;
+    height: 12px;
+    top: 0;
+    animation: fall 3s linear forwards;
 }
 
 @keyframes fall {
     to {
-        transform:translateY(100vh) rotate(1080deg);
-        opacity:0;
+        transform: translateY(100vh) rotate(1080deg);
+        opacity: 0;
     }
+}
+
+/* 😭 SHAKE */
+.shake {
+    animation: shake 0.3s;
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    50% { transform: translateX(-12px); }
+    100% { transform: translateX(12px); }
 }
 </style>
 </head>
 
 <body>
 
-<!-- 🎧 sons -->
+<!-- 🎧 MUSIQUE (NOUVELLE VRAIMENT DIFFÉRENTE) -->
 <audio id="bgMusic" loop>
-<source src="https://cdn.pixabay.com/audio/2022/03/15/audio_6c5c2e9c3b.mp3">
+  <source src="https://cdn.pixabay.com/audio/2023/03/28/audio_5f4c4c6bdf.mp3" type="audio/mpeg">
 </audio>
 
+<!-- 🎉 VICTOIRE -->
 <audio id="winSound">
-<source src="https://cdn.pixabay.com/audio/2022/10/16/audio_12b0c7443e.mp3">
+  <source src="https://cdn.pixabay.com/audio/2022/11/03/audio_0c7b9c8b9e.mp3" type="audio/mpeg">
 </audio>
 
-<!-- MENU -->
-<div id="menu">
-<h1>🔥 MON JEU 🔥</h1>
-<button onclick="startGame()">▶️ Jouer</button>
-</div>
+<!-- 🔊 CLICK -->
+<audio id="clickSound">
+  <source src="https://www.soundjay.com/buttons/sounds/button-16.mp3" type="audio/mpeg">
+</audio>
 
-<!-- JEU -->
-<div id="game">
-<div id="top">
-❤️ <span id="vies">3</span> |
-⏱ <span id="time">0</span>s |
-🏆 <span id="score">-</span>
-</div>
+<div id="score">🏆 Meilleur score : -</div>
 
-<div class="box">
-<h2>Devine le nombre</h2>
-<input id="input" type="number">
+<div class="box" id="game">
+<h1>🎮 Devine le nombre</h1>
+<p>Entre 1 et 40</p>
+
+<input id="input" type="number" placeholder="Entre un nombre">
 <br>
+
 <button onclick="verifier()">Deviner</button>
+<br>
+
+<button onclick="startMusic()">🎧 Activer musique</button>
+
 <p id="resultat"></p>
-</div>
 </div>
 
 <script>
-let nombre_secret;
-let essais;
-let vies;
-let temps = 0;
-let timer;
-let meilleur = localStorage.getItem("score");
+let nombre_secret = Math.floor(Math.random() * 40) + 1;
+let essais = 0;
 
-/* start */
-function startGame(){
-    document.getElementById("menu").style.display="none";
-    document.getElementById("game").style.display="block";
+let meilleur_score = localStorage.getItem("score");
 
-    document.getElementById("bgMusic").play();
-
-    reset();
-    startTimer();
+if (meilleur_score) {
+    document.getElementById("score").innerText =
+    "🏆 Meilleur score : " + meilleur_score;
 }
 
-/* reset */
-function reset(){
-    nombre_secret = Math.floor(Math.random()*40)+1;
-    essais = 0;
-    vies = 3;
-
-    document.getElementById("vies").innerText = vies;
-    document.getElementById("resultat").innerText="";
+/* 🎧 MUSIQUE */
+function startMusic() {
+    let music = document.getElementById("bgMusic");
+    music.volume = 0.2;
+    music.play();
 }
 
-/* timer */
-function startTimer(){
-    timer = setInterval(()=>{
-        temps++;
-        document.getElementById("time").innerText = temps;
-    },1000);
-}
+/* 🎮 JEU */
+function verifier() {
+    document.getElementById("clickSound").play();
 
-/* jeu */
-function verifier(){
     let devine = document.getElementById("input").value;
     essais++;
 
-    if(devine == nombre_secret){
-        document.getElementById("resultat").innerText="🎉 GAGNÉ !";
+    if (devine == nombre_secret) {
+        document.getElementById("resultat").innerText =
+        "🎉 BINGO ! Trouvé en " + essais + " essais !";
 
         document.getElementById("winSound").play();
         explosion();
 
-        if(!meilleur || essais < meilleur){
-            meilleur = essais;
+        if (!meilleur_score || essais < meilleur_score) {
+            meilleur_score = essais;
             localStorage.setItem("score", essais);
-            document.getElementById("score").innerText = essais;
+            document.getElementById("score").innerText =
+            "🏆 Meilleur score : " + essais;
         }
 
-        reset();
+        setTimeout(() => {
+            nombre_secret = Math.floor(Math.random() * 40) + 1;
+            essais = 0;
+            document.getElementById("resultat").innerText = "";
+        }, 2000);
     }
-    else{
-        vies--;
-        document.getElementById("vies").innerText = vies;
 
-        if(devine < nombre_secret){
-            document.getElementById("resultat").innerText="📉 Trop petit";
-        } else {
-            document.getElementById("resultat").innerText="📈 Trop grand";
-        }
+    else if (devine < nombre_secret) {
+        document.getElementById("resultat").innerText = "📉 Trop petit";
+        secousse();
+    }
 
-        if(vies == 0){
-            document.getElementById("resultat").innerText="💀 PERDU";
-            reset();
-        }
+    else {
+        document.getElementById("resultat").innerText = "📈 Trop grand";
+        secousse();
     }
 }
 
-/* confetti */
-function explosion(){
-    for(let i=0;i<100;i++){
-        let d=document.createElement("div");
-        d.classList.add("confetti");
-        d.style.left=Math.random()*100+"vw";
-        d.style.background="hsl("+Math.random()*360+",100%,50%)";
-        document.body.appendChild(d);
+/* 🎆 CONFETTI MAX */
+function explosion() {
+    for (let i = 0; i < 150; i++) {
+        let div = document.createElement("div");
+        div.classList.add("confetti");
+        div.style.left = Math.random() * 100 + "vw";
+        div.style.background = "hsl(" + Math.random()*360 + ",100%,50%)";
+        document.body.appendChild(div);
 
-        setTimeout(()=>d.remove(),3000);
+        setTimeout(() => div.remove(), 3000);
     }
+}
+
+/* 😭 SHAKE */
+function secousse() {
+    let game = document.getElementById("game");
+    game.classList.add("shake");
+
+    setTimeout(() => {
+        game.classList.remove("shake");
+    }, 300);
 }
 </script>
 
