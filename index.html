@@ -37,7 +37,6 @@ body {
     position: fixed;
     top: 10px;
     left: 10px;
-    font-size: 16px;
 }
 
 input, button {
@@ -48,7 +47,7 @@ input, button {
     font-size: 16px;
 }
 
-/* 🎆 CONFETTI */
+/* confetti */
 .confetti {
     position: fixed;
     width: 12px;
@@ -64,7 +63,7 @@ input, button {
     }
 }
 
-/* 😭 SHAKE */
+/* shake */
 .shake {
     animation: shake 0.3s;
 }
@@ -79,19 +78,19 @@ input, button {
 
 <body>
 
-<!-- 🎧 MUSIQUE (NOUVELLE VRAIMENT DIFFÉRENTE) -->
+<!-- 🎧 MUSIQUE (LOCAL = 100% OK) -->
 <audio id="bgMusic" loop>
-  <source src="https://cdn.pixabay.com/audio/2023/03/28/audio_5f4c4c6bdf.mp3" type="audio/mpeg">
+  <source src="music.mp3" type="audio/mpeg">
 </audio>
 
 <!-- 🎉 VICTOIRE -->
 <audio id="winSound">
-  <source src="https://cdn.pixabay.com/audio/2022/11/03/audio_0c7b9c8b9e.mp3" type="audio/mpeg">
+  <source src="win.mp3" type="audio/mpeg">
 </audio>
 
 <!-- 🔊 CLICK -->
 <audio id="clickSound">
-  <source src="https://www.soundjay.com/buttons/sounds/button-16.mp3" type="audio/mpeg">
+  <source src="https://www.soundjay.com/buttons/sounds/button-16.mp3">
 </audio>
 
 <div id="score">🏆 Meilleur score : -</div>
@@ -100,7 +99,7 @@ input, button {
 <h1>🎮 Devine le nombre</h1>
 <p>Entre 1 et 40</p>
 
-<input id="input" type="number" placeholder="Entre un nombre">
+<input id="input" type="number">
 <br>
 
 <button onclick="verifier()">Deviner</button>
@@ -122,14 +121,14 @@ if (meilleur_score) {
     "🏆 Meilleur score : " + meilleur_score;
 }
 
-/* 🎧 MUSIQUE */
+/* musique */
 function startMusic() {
     let music = document.getElementById("bgMusic");
     music.volume = 0.2;
     music.play();
 }
 
-/* 🎮 JEU */
+/* jeu */
 function verifier() {
     document.getElementById("clickSound").play();
 
@@ -166,9 +165,11 @@ function verifier() {
         document.getElementById("resultat").innerText = "📈 Trop grand";
         secousse();
     }
+
+    document.getElementById("input").value = "";
 }
 
-/* 🎆 CONFETTI MAX */
+/* confetti */
 function explosion() {
     for (let i = 0; i < 150; i++) {
         let div = document.createElement("div");
@@ -181,14 +182,12 @@ function explosion() {
     }
 }
 
-/* 😭 SHAKE */
+/* shake */
 function secousse() {
     let game = document.getElementById("game");
     game.classList.add("shake");
 
-    setTimeout(() => {
-        game.classList.remove("shake");
-    }, 300);
+    setTimeout(() => game.classList.remove("shake"), 300);
 }
 </script>
 
