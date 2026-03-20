@@ -80,14 +80,19 @@ input, button {
 
 <body>
 
-<!-- 🎧 musique hypnotisante -->
+<!-- 🎧 musique entraînante -->
 <audio id="bgMusic" loop>
-  <source src="https://cdn.pixabay.com/audio/2022/02/23/audio_0f0c2e6c59.mp3" type="audio/mpeg">
+  <source src="https://cdn.pixabay.com/audio/2021/11/25/audio_1c0b6e9c6f.mp3" type="audio/mpeg">
 </audio>
 
 <!-- 🔥 victoire -->
 <audio id="winSound">
   <source src="https://www.soundjay.com/buttons/sounds/button-09.mp3" type="audio/mpeg">
+</audio>
+
+<!-- 🔊 clic -->
+<audio id="clickSound">
+  <source src="https://www.soundjay.com/buttons/sounds/button-16.mp3" type="audio/mpeg">
 </audio>
 
 <div id="score">🏆 Meilleur score : -</div>
@@ -118,15 +123,17 @@ if (meilleur_score) {
     "🏆 Meilleur score : " + meilleur_score;
 }
 
-/* 🎧 musique */
+/* 🎧 musique (compatible mobile) */
 function startMusic() {
     let music = document.getElementById("bgMusic");
-    music.volume = 0.15; // doux = addictif
+    music.volume = 0.2;
     music.play();
 }
 
 /* 🎮 jeu */
 function verifier() {
+    document.getElementById("clickSound").play();
+
     let devine = document.getElementById("input").value;
     essais++;
 
