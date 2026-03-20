@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Block Blast Pro</title>
+<title>Block Blast Ultimate</title>
 
 <style>
 body {
@@ -51,12 +51,22 @@ h1 { margin:10px; }
 
 .block.selected {
     border:2px solid yellow;
+    transform:scale(1.1);
 }
 
 .block div {
     width:20px;
     height:20px;
     border-radius:3px;
+}
+
+/* explosion */
+@keyframes boom {
+    0% { transform:scale(1); opacity:1;}
+    100% { transform:scale(1.5); opacity:0;}
+}
+.boom {
+    animation: boom 0.3s;
 }
 </style>
 </head>
@@ -71,6 +81,14 @@ h1 { margin:10px; }
 
 <audio id="bgMusic" loop>
   <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="placeSound">
+  <source src="https://www.soundjay.com/buttons/sounds/button-09.mp3">
+</audio>
+
+<audio id="clearSound">
+  <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3">
 </audio>
 
 <div id="grid" class="grid"></div>
@@ -167,6 +185,8 @@ function placeBlock(index){
 
     if(!canPlace) return;
 
+    document.getElementById("placeSound").play();
+
     selectedBlock.shape.forEach((row,dy)=>{
         row.forEach((cell,dx)=>{
             if(cell){
@@ -195,7 +215,9 @@ function checkLines(){
     for(let y=0;y<gridSize;y++){
         if(grid.slice(y*gridSize,y*gridSize+gridSize).every(v=>v)){
             for(let x=0;x<gridSize;x++){
-                grid[y*gridSize+x]=null;
+                let index=y*gridSize+x;
+                document.querySelectorAll(".cell")[index].classList.add("boom");
+                grid[index]=null;
             }
             score+=10;
             cleared=true;
@@ -203,13 +225,15 @@ function checkLines(){
     }
 
     for(let x=0;x<gridSize;x++){
-        let colFull=true;
+        let full=true;
         for(let y=0;y<gridSize;y++){
-            if(!grid[y*gridSize+x]) colFull=false;
+            if(!grid[y*gridSize+x]) full=false;
         }
-        if(colFull){
+        if(full){
             for(let y=0;y<gridSize;y++){
-                grid[y*gridSize+x]=null;
+                let index=y*gridSize+x;
+                document.querySelectorAll(".cell")[index].classList.add("boom");
+                grid[index]=null;
             }
             score+=10;
             cleared=true;
@@ -217,8 +241,7 @@ function checkLines(){
     }
 
     if(cleared){
-        document.body.style.background="green";
-        setTimeout(()=>document.body.style.background="",200);
+        document.getElementById("clearSound").play();
     }
 
     if(score>best){
@@ -232,6 +255,15 @@ function checkLines(){
 
     if(document.getElementById("blocks").children.length===0){
         generateBlocks();
+    }
+
+    checkGameOver();
+}
+
+function checkGameOver(){
+    if(document.getElementById("blocks").children.length===0){
+        alert("💀 GAME OVER !");
+        location.reload();
     }
 }
 
