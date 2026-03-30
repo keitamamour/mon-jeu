@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon IA</title>
+
+<style>
+body {
+    background:#111;
+    color:white;
+    text-align:center;
+    font-family:Arial;
+}
+
+input {
+    padding:10px;
+    font-size:16px;
+}
+
+button {
+    padding:10px;
+    font-size:16px;
+}
+
+#chat {
+    margin-top:20px;
+    font-size:18px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🤖 Mon IA</h1>
+
+<input id="msg" placeholder="écris un message">
+<button onclick="parler()">Envoyer</button>
+
+<div id="chat"></div>
+
+<script>
+function parler(){
+    let message = document.getElementById("msg").value.toLowerCase();
+    let reponse = "je comprends pas 🤔";
+
+    if(message.includes("bonjour")){
+        reponse = "salut 😎";
+    }
+    else if(message.includes("ça va")){
+        reponse = "oui et toi ?";
+    }
+    else if(message.includes("ton nom")){
+        reponse = "je suis ton IA 🤖";
+    }
+
+    document.getElementById("chat").innerHTML =
+        "Toi: " + message + "<br>IA: " + reponse;
+}
+</script>
+
+</body>
+</html>
